@@ -4,7 +4,7 @@ date: 2024-03-14
 tags: 
 ---
 
-Impressive new language models like Llama and Mistral have broadened the accessiblity of AI training. If you want to fine-tune a model with your own data, it's now relative easy to do with tools like [Axolotl](https://github.com/OpenAccess-AI-Collective/axolotl) and a few dollars spent on a GPU cloud. But if you want to go deeper and train larger models or try new methods, the cloud bill can quickly rack up. Renting 8 A100's on AWS will set you back an astounding $350,000 per year! There are cheaper clouds, but they can still cost tens of thousands a year.
+Impressive new language models like Llama and Mistral have broadened the accessibility of AI training. If you want to fine-tune a model with your own data, it's now relatively easy to do with tools like [Axolotl](https://github.com/OpenAccess-AI-Collective/axolotl) and a few dollars spent on a GPU cloud. But if you want to go deeper and train larger models or try new methods, the cloud bill can quickly rack up. Renting 8 A100's on AWS will set you back an astounding $350,000 per year! There are cheaper clouds, but they can still cost tens of thousands a year.
 
 I've always enjoyed building PCs. I remember when I was 16 and my grandma bought me my first PC to assemble myself. So in the name of fun and saving money, I embarked on building an AI server so that I can more affordably do independent AI research.
 
@@ -40,7 +40,7 @@ It arrived at my house on a pallet. It was heavier than I expected!
 
 {% image "IMG_4750.jpeg", "The pallet" %}
 
-After lugging it up the stairs and reading the manual, I installed 10 RTX 3090s I bought second hand from someone who previously was using them for mining. Note that to fit the maximum number of GPUs in a system you'll need to find blower or turo style GPUs that are only two slots wide. The vast majoriy of 3090 and 4090 GPUs are for gaming, and they will take up 3 slots and the power comes out the top and you won't be able to put the case on your server. If you can't find blower consumer GPUs, you're next best bet is the RTX A6000 which is still fairly good value for money, even if it's still 3x more than a 4090.
+After lugging it up the stairs and reading the manual, I installed 10 RTX 3090s I bought second hand from someone who previously was using them for mining. Note that to fit the maximum number of GPUs in a system you'll need to find blower or turbo style GPUs that are only two slots wide. The vast majority of 3090 and 4090 GPUs are for gaming, and they will take up 3 slots and the power comes out the top and you won't be able to put the case on your server. If you can't find blower consumer GPUs, you're next best bet is the RTX A6000 which is still fairly good value for money, even if it's still 3x more than a 4090.
 
 You'll also need to add the CPUs (two of them), memory and storage. I sourced everything secondhand from eBay. Most things cost no more than a few hundred dollars each. I went with 2x Intel Xeon Platinum 8160, 12x32GB DDR memory and an 8TB SSD.
 
@@ -76,7 +76,7 @@ GRUB_CMDLINE_LINUX_DEFAULT="intel_iommu=off rcutree.rcu_idle_gp_delay=1"
 
 # Check GPU P2P communication
 
-If you're using a GPU that supports it, P2P communicaion speeds up things a lot.
+If you're using a GPU that supports it, P2P communication speeds up things a lot.
 
 Note it's important check [PCI Access Control Services (ACS)](https://docs.nvidia.com/deeplearning/nccl/archives/nccl_284/user-guide/docs/troubleshooting.html#:~:text=PCI%20Access%20Control%20Services%20(ACS)¶&text=If%20PCI%20switches%20have%20ACS,done%20again%20after%z) is disabled.
 
@@ -86,10 +86,10 @@ You can follow these steps to test your system's GPU P2P speed: https://docs.nvi
 
 We now want to get the NVIDIA drivers, CUDA and our Python envs setup.
 
-I've had success using thes steps to install CUDA v11.8: https://gist.github.com/MihailCosmin/affa6b1b71b43787e9228c25fe15aeba
+I've had success using these steps to install CUDA v11.8: https://gist.github.com/MihailCosmin/affa6b1b71b43787e9228c25fe15aeba
 Some people have mentioned using a higher NVIDIA drivers version than the nvidia-driver-515 in the script. But be beware there's a bug in driver version 545 that prevents 3090 and 4090 cards from using P2P (see [this github issue](https://github.com/NVIDIA/nccl-tests/issues/117) for a discussion on the problem). If you have a driver with this bug, you may find your training run stalls and times out. Version 535 worked well for me.
 
-I like to use Conda with the [fastchan channel](https://www.fast.ai/posts/2021-07-15-fastconda.html) for my environments. But you may enjoy a different python virutal env tool. 
+I like to use Conda with the [fastchan channel](https://www.fast.ai/posts/2021-07-15-fastconda.html) for my environments. But you may enjoy a different python virtual env tool. 
 
 # Now you can train some AI
 
@@ -111,7 +111,7 @@ This [Colocation Survival Guide](https://www.datacate.net/wp-content/uploads/201
 
 ## Set a lower max power limit for GPUs
 
-Some people find that lowering the power limit just a bit will reduce max temp without any real performance sacrafice. I set the max power for my RTX 3090's to 300W (from 305W) by [following these steps](https://www.reddit.com/r/Fedora/comments/11lh9nn/set_nvidia_gpu_power_and_temp_limit_on_boot/).
+Some people find that lowering the power limit just a bit will reduce max temp without any real performance sacrifice. I set the max power for my RTX 3090's to 300W (from 305W) by [following these steps](https://www.reddit.com/r/Fedora/comments/11lh9nn/set_nvidia_gpu_power_and_temp_limit_on_boot/).
 
 ## Docker bug workaround
 
@@ -119,4 +119,4 @@ If you're planning to use Docker with the GPUs, note there's [a bug on Ubuntu 22
 
 # Going bigger?
 
-If you're plannig to build a cluster, there is an excellent video from the Lambda team: [Building a GPU cluster for AI](https://www.youtube.com/watch?v=rfu5FwncZ6s).
+If you're planing to build a cluster, there is an excellent video from the Lambda team: [Building a GPU cluster for AI](https://www.youtube.com/watch?v=rfu5FwncZ6s).
