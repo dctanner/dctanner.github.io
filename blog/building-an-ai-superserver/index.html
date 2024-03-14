@@ -5,8 +5,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Building an AI SuperServer for LLM training and experiments</title>
 		<meta name="description" content="Notes from a journey of compounding curiosity.">
-		<link rel="alternate" href="/eleventy-base-blog/feed/feed.xml" type="application/atom+xml" title="dctanner&#39;s blog">
-		<link rel="alternate" href="/eleventy-base-blog/feed/feed.json" type="application/json" title="dctanner&#39;s blog">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="dctanner&#39;s blog">
+		<link rel="alternate" href="/feed/feed.json" type="application/json" title="dctanner&#39;s blog">
 		
 		<style>/**
  * okaidia theme for JavaScript, CSS and HTML
@@ -452,12 +452,12 @@ h2 + .header-anchor {
 		<a href="#skip" class="visually-hidden">Skip to main content</a>
 
 		<header>
-			<a href="/eleventy-base-blog/" class="home-link">dctanner&#39;s blog</a>
+			<a href="/" class="home-link">dctanner&#39;s blog</a>
 			<nav>
 				<h2 class="visually-hidden">Top level navigation menu</h2>
 				<ul class="nav">
-					<li class="nav-item"><a href="/eleventy-base-blog/">Writing</a></li>
-					<li class="nav-item"><a href="/eleventy-base-blog/about/">About Me</a></li>
+					<li class="nav-item"><a href="/">Writing</a></li>
+					<li class="nav-item"><a href="/about/">About Me</a></li>
 				</ul>
 			</nav>
 		</header>
@@ -475,19 +475,19 @@ h2 + .header-anchor {
 <h1 id="your-options" tabindex="-1">Your options <a class="header-anchor" href="#your-options">#</a></h1>
 <p>Depending on your budget and use case, there are a few routes to take when building an AI server.</p>
 <h2 id="open-frame" tabindex="-1">Open frame <a class="header-anchor" href="#open-frame">#</a></h2>
-<p><picture><source type="image/avif" srcset="/eleventy-base-blog/img/l6X6xCxgFa-2048.avif 2048w"><source type="image/webp" srcset="/eleventy-base-blog/img/l6X6xCxgFa-2048.webp 2048w"><img alt="Miner style" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/eleventy-base-blog/img/l6X6xCxgFa-2048.jpeg" width="2048" height="1536"></picture></p>
+<p><picture><source type="image/avif" srcset="/img/l6X6xCxgFa-2048.avif 2048w"><source type="image/webp" srcset="/img/l6X6xCxgFa-2048.webp 2048w"><img alt="Miner style" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/img/l6X6xCxgFa-2048.jpeg" width="2048" height="1536"></picture></p>
 <p>If the server is just for you, and you want to keep it at home or in your basement, the most affordable option is essentially a powerful consumer PC, with an open frame case (originally designed for crypto miners). You'll be able to find a lots of advice on Reddit for this route.</p>
 <p>The important things are a motherboard that has lots of 16x PCIe slots, PCIe risers with redrivers, and multiple PSUs (depending the number of GPUs you choose). You'll be able to buy everything second had if you like, including the GPUs. For GPUs you're best going with RTX 3090s or 4090s in this setup, and because there's no case, you won't have issues with space or airflow.</p>
 <p>The benefit if this route is cost, but also the ability to start simple with just a single GPU and grow as you desire by adding more.</p>
 <h2 id="rack-server" tabindex="-1">Rack server <a class="header-anchor" href="#rack-server">#</a></h2>
-<p><picture><source type="image/avif" srcset="/eleventy-base-blog/img/U4DUeJHjp3-1280.avif 1280w"><source type="image/webp" srcset="/eleventy-base-blog/img/U4DUeJHjp3-1280.webp 1280w"><img alt="Server style" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/eleventy-base-blog/img/U4DUeJHjp3-1280.jpeg" width="1280" height="960"></picture></p>
+<p><picture><source type="image/avif" srcset="/img/U4DUeJHjp3-1280.avif 1280w"><source type="image/webp" srcset="/img/U4DUeJHjp3-1280.webp 1280w"><img alt="Server style" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/img/U4DUeJHjp3-1280.jpeg" width="1280" height="960"></picture></p>
 <p>If you're planning to train larger models, have more servers, datacenter GPUs or just don't have anywhere to house a noisy hot server at home, you can go the rack mountable server route. This is the the route I've gone, as our house doesn't have a basement and our internet isn't that fast. My server now lives in a datacenter where it's cooled and well connected.</p>
 <p>I found less resources on this route, so the rest of this guide is aimed at helping you build and setup a rack mountable GPU server.</p>
 <h1 id="building-the-server" tabindex="-1">Building the server <a class="header-anchor" href="#building-the-server">#</a></h1>
 <p>Supermicro make great server systems and many specifically for AI use cases. For example the <a href="https://www.supermicro.com/en/products/system/4u/4029/sys-4029gp-trt2.cfm">SuperServer 4029GP-TRT2</a> is a mid range 4U dual CPU server with 10 PCIe slots - ideal for filling with GPUs! I found a well priced one from an IT supplier in the UK. The newer model is more expensive, but may be easier to find. Note that the model I used only have PCIe 3.0. If you are using RTX 4090 or a newer datacenter GPU, you will probably want the newer model which supports PCIe 4.0.</p>
-<p><picture><source type="image/avif" srcset="/eleventy-base-blog/img/rKkyq27rxN-960.avif 960w"><img alt="SuperServer 4029GP-TRT2" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/eleventy-base-blog/img/rKkyq27rxN-960.webp" width="960" height="720"></picture></p>
+<p><picture><source type="image/avif" srcset="/img/rKkyq27rxN-960.avif 960w"><img alt="SuperServer 4029GP-TRT2" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/img/rKkyq27rxN-960.webp" width="960" height="720"></picture></p>
 <p>It arrived at my house on a pallet. It was heavier than I expected!</p>
-<p><picture><source type="image/avif" srcset="/eleventy-base-blog/img/x5qFkxTOGi-1280.avif 1280w"><source type="image/webp" srcset="/eleventy-base-blog/img/x5qFkxTOGi-1280.webp 1280w"><img alt="The pallet" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/eleventy-base-blog/img/x5qFkxTOGi-1280.jpeg" width="1280" height="960"></picture></p>
+<p><picture><source type="image/avif" srcset="/img/x5qFkxTOGi-1280.avif 1280w"><source type="image/webp" srcset="/img/x5qFkxTOGi-1280.webp 1280w"><img alt="The pallet" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/img/x5qFkxTOGi-1280.jpeg" width="1280" height="960"></picture></p>
 <p>After lugging it up the stairs and reading the manual, I installed 10 RTX 3090s I bought second hand from someone who previously was using them for mining. Note that to fit the maximum number of GPUs in a system you'll need to find blower or turo style GPUs that are only two slots wide. The vast majoriy of 3090 and 4090 GPUs are for gaming, and they will take up 3 slots and the power comes out the top and you won't be able to put the case on your server. If you can't find blower consumer GPUs, you're next best bet is the RTX A6000 which is still fairly good value for money, even if it's still 3x more than a 4090.</p>
 <p>You'll also need to add the CPUs (two of them), memory and storage. I sourced everything secondhand from eBay. Most things cost no more than a few hundred dollars each. I went with 2x Intel Xeon Platinum 8160, 12x32GB DDR memory and an 8TB SSD.</p>
 <p>Once everything was installed, I turned it on for the first time - what I heard could only be described as a mini jet engine. Server fans are noisy.</p>
@@ -519,10 +519,10 @@ h2 + .header-anchor {
 Some people have mentioned using a higher NVIDIA drivers version than the nvidia-driver-515 in the script. But be beware there's a bug in driver version 545 that prevents 3090 and 4090 cards from using P2P (see <a href="https://github.com/NVIDIA/nccl-tests/issues/117">this github issue</a> for a discussion on the problem). If you have a driver with this bug, you may find your training run stalls and times out. Version 535 worked well for me.</p>
 <p>I like to use Conda with the <a href="https://www.fast.ai/posts/2021-07-15-fastconda.html">fastchan channel</a> for my environments. But you may enjoy a different python virutal env tool.</p>
 <h1 id="now-you-can-train-some-ai" tabindex="-1">Now you can train some AI <a class="header-anchor" href="#now-you-can-train-some-ai">#</a></h1>
-<p><picture><source type="image/avif" srcset="/eleventy-base-blog/img/WfDXmhx_Ty-1482.avif 1482w"><source type="image/webp" srcset="/eleventy-base-blog/img/WfDXmhx_Ty-1482.webp 1482w"><img alt="nvidia-smi" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/eleventy-base-blog/img/WfDXmhx_Ty-1482.jpeg" width="1482" height="1338"></picture></p>
+<p><picture><source type="image/avif" srcset="/img/WfDXmhx_Ty-1482.avif 1482w"><source type="image/webp" srcset="/img/WfDXmhx_Ty-1482.webp 1482w"><img alt="nvidia-smi" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/img/WfDXmhx_Ty-1482.jpeg" width="1482" height="1338"></picture></p>
 <p>I'm enjoying using <a href="https://github.com/OpenAccess-AI-Collective/axolotl">Axolotl</a> for LLM fine tuning. <a href="https://huggingface.co/docs/transformers/index">HuggingFace Transformers</a> is also a great place to start.</p>
 <h1 id="datacenter-trip" tabindex="-1">Datacenter trip <a class="header-anchor" href="#datacenter-trip">#</a></h1>
-<p><picture><source type="image/avif" srcset="/eleventy-base-blog/img/Fd4oi2rcxB-1922.avif 1922w"><source type="image/webp" srcset="/eleventy-base-blog/img/Fd4oi2rcxB-1922.webp 1922w"><img alt="Datacenter" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/eleventy-base-blog/img/Fd4oi2rcxB-1922.png" width="1922" height="1294"></picture></p>
+<p><picture><source type="image/avif" srcset="/img/Fd4oi2rcxB-1922.avif 1922w"><source type="image/webp" srcset="/img/Fd4oi2rcxB-1922.webp 1922w"><img alt="Datacenter" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/img/Fd4oi2rcxB-1922.png" width="1922" height="1294"></picture></p>
 <p>Since the GPUs are super noisy and hot, I found a local datacenter that would colocate it for a reasonable cost. Installation was easier than I expected, although we ended up putting it on a lower slot on the rack because it was too heavy to lift half way up without a lift.</p>
 <p>This <a href="https://www.datacate.net/wp-content/uploads/2019/04/Colocation-Survival-Guide-6x9-with-bonus-material.pdf">Colocation Survival Guide</a> was super helpful, as it walks you through all the aspects of colocating, from the physical setup to networking.</p>
 <h1 id="other-things" tabindex="-1">Other things <a class="header-anchor" href="#other-things">#</a></h1>
@@ -538,6 +538,6 @@ Some people have mentioned using a higher NVIDIA drivers version than the nvidia
 
 		<footer></footer>
 
-		<!-- This page `/eleventy-base-blog/blog/building-an-ai-superserver/` was built on 2024-03-14T14:18:00.160Z -->
+		<!-- This page `/blog/building-an-ai-superserver/` was built on 2024-03-14T15:08:25.324Z -->
 	</body>
 </html>
