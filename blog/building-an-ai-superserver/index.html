@@ -470,7 +470,7 @@ h2 + .header-anchor {
 	<li><time datetime="2024-03-14">14 March 2024</time></li>
 </ul>
 
-<p>Impressive new language models like Llama and Mistral have broadened the accessiblity of AI training. If you want to fine-tune a model with your own data, it's now relative easy to do with tools like <a href="https://github.com/OpenAccess-AI-Collective/axolotl">Axolotl</a> and a few dollars spent on a GPU cloud. But if you want to go deeper and train larger models or try new methods, the cloud bill can quickly rack up. Renting 8 A100's on AWS will set you back an astounding $350,000 per year! There are cheaper clouds, but they can still cost tens of thousands a year.</p>
+<p>Impressive new language models like Llama and Mistral have broadened the accessibility of AI training. If you want to fine-tune a model with your own data, it's now relatively easy to do with tools like <a href="https://github.com/OpenAccess-AI-Collective/axolotl">Axolotl</a> and a few dollars spent on a GPU cloud. But if you want to go deeper and train larger models or try new methods, the cloud bill can quickly rack up. Renting 8 A100's on AWS will set you back an astounding $350,000 per year! There are cheaper clouds, but they can still cost tens of thousands a year.</p>
 <p>I've always enjoyed building PCs. I remember when I was 16 and my grandma bought me my first PC to assemble myself. So in the name of fun and saving money, I embarked on building an AI server so that I can more affordably do independent AI research.</p>
 <h1 id="your-options" tabindex="-1">Your options <a class="header-anchor" href="#your-options">#</a></h1>
 <p>Depending on your budget and use case, there are a few routes to take when building an AI server.</p>
@@ -488,7 +488,7 @@ h2 + .header-anchor {
 <p><picture><source type="image/avif" srcset="/img/rKkyq27rxN-960.avif 960w"><img alt="SuperServer 4029GP-TRT2" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/img/rKkyq27rxN-960.webp" width="960" height="720"></picture></p>
 <p>It arrived at my house on a pallet. It was heavier than I expected!</p>
 <p><picture><source type="image/avif" srcset="/img/x5qFkxTOGi-1280.avif 1280w"><source type="image/webp" srcset="/img/x5qFkxTOGi-1280.webp 1280w"><img alt="The pallet" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/img/x5qFkxTOGi-1280.jpeg" width="1280" height="960"></picture></p>
-<p>After lugging it up the stairs and reading the manual, I installed 10 RTX 3090s I bought second hand from someone who previously was using them for mining. Note that to fit the maximum number of GPUs in a system you'll need to find blower or turo style GPUs that are only two slots wide. The vast majoriy of 3090 and 4090 GPUs are for gaming, and they will take up 3 slots and the power comes out the top and you won't be able to put the case on your server. If you can't find blower consumer GPUs, you're next best bet is the RTX A6000 which is still fairly good value for money, even if it's still 3x more than a 4090.</p>
+<p>After lugging it up the stairs and reading the manual, I installed 10 RTX 3090s I bought second hand from someone who previously was using them for mining. Note that to fit the maximum number of GPUs in a system you'll need to find blower or turbo style GPUs that are only two slots wide. The vast majority of 3090 and 4090 GPUs are for gaming, and they will take up 3 slots and the power comes out the top and you won't be able to put the case on your server. If you can't find blower consumer GPUs, you're next best bet is the RTX A6000 which is still fairly good value for money, even if it's still 3x more than a 4090.</p>
 <p>You'll also need to add the CPUs (two of them), memory and storage. I sourced everything secondhand from eBay. Most things cost no more than a few hundred dollars each. I went with 2x Intel Xeon Platinum 8160, 12x32GB DDR memory and an 8TB SSD.</p>
 <p>Once everything was installed, I turned it on for the first time - what I heard could only be described as a mini jet engine. Server fans are noisy.</p>
 <p>Next step was to setup the OS and environment.</p>
@@ -510,14 +510,14 @@ h2 + .header-anchor {
 <pre><code>GRUB_CMDLINE_LINUX_DEFAULT=&quot;intel_iommu=off rcutree.rcu_idle_gp_delay=1&quot;
 </code></pre>
 <h1 id="check-gpu-p2p-communication" tabindex="-1">Check GPU P2P communication <a class="header-anchor" href="#check-gpu-p2p-communication">#</a></h1>
-<p>If you're using a GPU that supports it, P2P communicaion speeds up things a lot.</p>
+<p>If you're using a GPU that supports it, P2P communication speeds up things a lot.</p>
 <p>Note it's important check <a href="https://docs.nvidia.com/deeplearning/nccl/archives/nccl_284/user-guide/docs/troubleshooting.html#:~:text=PCI%20Access%20Control%20Services%20(ACS)%C2%B6&amp;text=If%20PCI%20switches%20have%20ACS,done%20again%20after%25z">PCI Access Control Services (ACS)</a> is disabled.</p>
 <p>You can follow these steps to test your system's GPU P2P speed: https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/troubleshooting.html#gpu-to-gpu-communication</p>
 <h1 id="nvidia-drivers-and-python-environment" tabindex="-1">NVIDIA drivers and python environment <a class="header-anchor" href="#nvidia-drivers-and-python-environment">#</a></h1>
 <p>We now want to get the NVIDIA drivers, CUDA and our Python envs setup.</p>
-<p>I've had success using thes steps to install CUDA v11.8: https://gist.github.com/MihailCosmin/affa6b1b71b43787e9228c25fe15aeba
+<p>I've had success using these steps to install CUDA v11.8: https://gist.github.com/MihailCosmin/affa6b1b71b43787e9228c25fe15aeba
 Some people have mentioned using a higher NVIDIA drivers version than the nvidia-driver-515 in the script. But be beware there's a bug in driver version 545 that prevents 3090 and 4090 cards from using P2P (see <a href="https://github.com/NVIDIA/nccl-tests/issues/117">this github issue</a> for a discussion on the problem). If you have a driver with this bug, you may find your training run stalls and times out. Version 535 worked well for me.</p>
-<p>I like to use Conda with the <a href="https://www.fast.ai/posts/2021-07-15-fastconda.html">fastchan channel</a> for my environments. But you may enjoy a different python virutal env tool.</p>
+<p>I like to use Conda with the <a href="https://www.fast.ai/posts/2021-07-15-fastconda.html">fastchan channel</a> for my environments. But you may enjoy a different python virtual env tool.</p>
 <h1 id="now-you-can-train-some-ai" tabindex="-1">Now you can train some AI <a class="header-anchor" href="#now-you-can-train-some-ai">#</a></h1>
 <p><picture><source type="image/avif" srcset="/img/WfDXmhx_Ty-1482.avif 1482w"><source type="image/webp" srcset="/img/WfDXmhx_Ty-1482.webp 1482w"><img alt="nvidia-smi" loading="lazy" decoding="async" style="width: 100%; height: auto;" src="/img/WfDXmhx_Ty-1482.jpeg" width="1482" height="1338"></picture></p>
 <p>I'm enjoying using <a href="https://github.com/OpenAccess-AI-Collective/axolotl">Axolotl</a> for LLM fine tuning. <a href="https://huggingface.co/docs/transformers/index">HuggingFace Transformers</a> is also a great place to start.</p>
@@ -527,17 +527,17 @@ Some people have mentioned using a higher NVIDIA drivers version than the nvidia
 <p>This <a href="https://www.datacate.net/wp-content/uploads/2019/04/Colocation-Survival-Guide-6x9-with-bonus-material.pdf">Colocation Survival Guide</a> was super helpful, as it walks you through all the aspects of colocating, from the physical setup to networking.</p>
 <h1 id="other-things" tabindex="-1">Other things <a class="header-anchor" href="#other-things">#</a></h1>
 <h2 id="set-a-lower-max-power-limit-for-gpus" tabindex="-1">Set a lower max power limit for GPUs <a class="header-anchor" href="#set-a-lower-max-power-limit-for-gpus">#</a></h2>
-<p>Some people find that lowering the power limit just a bit will reduce max temp without any real performance sacrafice. I set the max power for my RTX 3090's to 300W (from 305W) by <a href="https://www.reddit.com/r/Fedora/comments/11lh9nn/set_nvidia_gpu_power_and_temp_limit_on_boot/">following these steps</a>.</p>
+<p>Some people find that lowering the power limit just a bit will reduce max temp without any real performance sacrifice. I set the max power for my RTX 3090's to 300W (from 305W) by <a href="https://www.reddit.com/r/Fedora/comments/11lh9nn/set_nvidia_gpu_power_and_temp_limit_on_boot/">following these steps</a>.</p>
 <h2 id="docker-bug-workaround" tabindex="-1">Docker bug workaround <a class="header-anchor" href="#docker-bug-workaround">#</a></h2>
 <p>If you're planning to use Docker with the GPUs, note there's <a href="https://github.com/NVIDIA/nvidia-container-toolkit/issues/48">a bug on Ubuntu 22.04 which needs working around</a>.</p>
 <h1 id="going-bigger" tabindex="-1">Going bigger? <a class="header-anchor" href="#going-bigger">#</a></h1>
-<p>If you're plannig to build a cluster, there is an excellent video from the Lambda team: <a href="https://www.youtube.com/watch?v=rfu5FwncZ6s">Building a GPU cluster for AI</a>.</p>
+<p>If you're planing to build a cluster, there is an excellent video from the Lambda team: <a href="https://www.youtube.com/watch?v=rfu5FwncZ6s">Building a GPU cluster for AI</a>.</p>
 
 
 		</main>
 
 		<footer></footer>
 
-		<!-- This page `/blog/building-an-ai-superserver/` was built on 2024-03-14T15:14:47.034Z -->
+		<!-- This page `/blog/building-an-ai-superserver/` was built on 2024-03-14T15:30:05.503Z -->
 	</body>
 </html>
