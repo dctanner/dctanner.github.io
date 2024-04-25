@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Using LLM tool calling and long context for better RAG</title>
+		<meta name="description" content="Notes from a journey of compounding curiosity.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="dctanner&#39;s blog">
+		<link rel="alternate" href="/feed/feed.json" type="application/json" title="dctanner&#39;s blog">
+		
+		<style>/**
+ * okaidia theme for JavaScript, CSS and HTML
+ * Loosely based on Monokai textmate theme by http://www.monokai.nl/
+ * @author ocodia
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: #f8f8f2;
+	background: none;
+	text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+	border-radius: 0.3em;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #272822;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: #8292a2;
+}
+
+.token.punctuation {
+	color: #f8f8f2;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #f92672;
+}
+
+.token.boolean,
+.token.number {
+	color: #ae81ff;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #a6e22e;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string,
+.token.variable {
+	color: #f8f8f2;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.function,
+.token.class-name {
+	color: #e6db74;
+}
+
+.token.keyword {
+	color: #66d9ef;
+}
+
+.token.regex,
+.token.important {
+	color: #fd971f;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+* { box-sizing: border-box; }
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #082840;
+	--text-color-link-active: #5f2b48;
+	--text-color-link-visited: #17050F;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 50em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main {
+	padding: 1rem;
+}
+main :first-child {
+	margin-top: 0;
+}
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+header:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.links-nextprev {
+	list-style: none;
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+}
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em .5em;
+	flex-wrap: wrap;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+	margin-right: 2em;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+	margin-right: 1em;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	list-style: none;
+	padding: 0;
+	padding-left: 1.5rem;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	content: "" counter(start-from, decimal-leading-zero) ". ";
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	padding-left: .25em;
+	padding-right: .5em;
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-transform: capitalize;
+	font-style: italic;
+}
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+/* Direct Links / Markdown Headers */
+.header-anchor {
+	text-decoration: none;
+	font-style: normal;
+	font-size: 1em;
+	margin-left: .1em;
+}
+a[href].header-anchor,
+a[href].header-anchor:visited {
+	color: transparent;
+}
+a[href].header-anchor:focus,
+a[href].header-anchor:hover {
+	text-decoration: underline;
+}
+a[href].header-anchor:focus,
+:hover > a[href].header-anchor {
+	color: #aaa;
+}
+
+h2 + .header-anchor {
+	font-size: 1.5em;
+}</style>
+	</head>
+	<body>
+		<a href="#skip" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">dctanner&#39;s blog</a>
+			<nav>
+				<h2 class="visually-hidden">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Writing</a></li>
+					<li class="nav-item"><a href="/about/">About Me</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="skip">
+			
+<h1>Using LLM tool calling and long context for better RAG</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2024-04-25">25 April 2024</time></li>
+</ul>
+
+<p>When building a RAG pipeline you'll probably reach for a vector store to store embeddings of document chunks, which are then retrieved and put into context at query time. This works well if your users are asking single fact queries where the answer can be found in a relevant document chunk. But if you just want to ask more complex questions where the answer requires information, spread across the whole document or across multiple documents, retreiveing chunks often leaves out critical information and can lead to inaccurate responses.</p>
+<p>Relying on document chunks has been a great solution to add knowledge to LLMs with limited context windows. But context windows have grown massively over the past year, with the leading LLMs supporting over 200,000 token context windows. This opens the door to new approaches to RAG which are less constrained by context.</p>
+<h2 id="whole-document-querying-rag" tabindex="-1">Whole document querying RAG <a class="header-anchor" href="#whole-document-querying-rag">#</a></h2>
+<p>Instead of retrieving document chunks, I've had success retreiving and querying whole documents. The result is that all the knowledge in a document is included. Queries like 'summarize xyz' yield a full and complete summary without risk of missing important details.</p>
+<p>When does this work? This approach works best if your documents are all of the same type or can be put into categories. It works especially well if the user queries include enough information to locate the specific document(s) the question is for.or</p>
+<p>For example, if your documents are client contracts, each may have a client name, date and contract type. If a user asks 'Summarize the most recent contract with Acme Inc?' we have enough information to find this document, and then use the whole document as context to fully answer their request.</p>
+<p>Querying whole documents like this calls for a different RAG workflow than the common single step chunk-retrieve-query workflow. Retrieving whole documents and putting them straight into the context could fill up even the largest context windows.</p>
+<p>Instead, we can leverage the function/tool calling ability of many LLMs to create sub-queries to query each document. We can even make use of cheaper and faster LLMs for these sub-queries which have to process the complete documents.</p>
+<p>What does this look like in practice?</p>
+<h3 id="create-document-query-functions" tabindex="-1">Create document query functions <a class="header-anchor" href="#create-document-query-functions">#</a></h3>
+<p>In the example above, we would need to be able to locate and query a client contract document. We can create a function which takes several search filters, retrieves the full text of the top matching document, and then calls an LLM (e.g. gpt-3.5-turbo) with the full document text and the query. The fuction should accept the filters required to find the document e.g.: client name, date range, contract type. Plus a 'query' param which is the query to send to the LLM with the full document text.</p>
+<p>There's no right way to search for these documents, you could use SQL, Elastic or even embeddings. The key thing is it should be able handle fuzzy search filters, e.g. for the client name and contract type.</p>
+<p>Here's an example of this function:</p>
+<pre class="language-python" tabindex="0"><code class="language-python"><span class="token keyword">def</span> <span class="token function">query_client_contract</span><span class="token punctuation">(</span>client_name<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">,</span> document_type<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">,</span> from_date<span class="token punctuation">:</span> <span class="token builtin">str</span> <span class="token operator">=</span> <span class="token boolean">None</span><span class="token punctuation">,</span> to_date<span class="token punctuation">:</span> <span class="token builtin">str</span> <span class="token operator">=</span> <span class="token boolean">None</span><span class="token punctuation">,</span> query<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+	<span class="token comment"># Search for the document</span>
+	document <span class="token operator">=</span> search_client_contract<span class="token punctuation">(</span>client_name<span class="token punctuation">,</span> document_type<span class="token punctuation">,</span> from_date<span class="token punctuation">,</span> to_date<span class="token punctuation">)</span>
+	<span class="token comment"># Call the LLM with the full document text and the query</span>
+    messages <span class="token operator">=</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span><span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"Answer the query using the provided text."</span><span class="token punctuation">,</span> <span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"system"</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">{</span><span class="token string">"content"</span><span class="token punctuation">:</span> document <span class="token operator">+</span> <span class="token string">"\n\nQuery: "</span> <span class="token operator">+</span> query<span class="token punctuation">,</span> <span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span>
+	response <span class="token operator">=</span> client<span class="token punctuation">.</span>chat<span class="token punctuation">.</span>completions<span class="token punctuation">.</span>create<span class="token punctuation">(</span>
+        model<span class="token operator">=</span><span class="token string">"gpt-3.5-turbo"</span><span class="token punctuation">,</span> <span class="token comment"># Use a cheaper model for the sub-query which will process the full document</span>
+        messages<span class="token operator">=</span>messages<span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+	<span class="token keyword">return</span> response<span class="token punctuation">.</span>choices<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>message<span class="token punctuation">.</span>content</code></pre>
+<h3 id="sub-query-function-calls" tabindex="-1">Sub-query function calls <a class="header-anchor" href="#sub-query-function-calls">#</a></h3>
+<p>Now we have document seach function, we are going to use LLM function calling (see <a href="https://platform.openai.com/docs/guides/function-calling">OpenAI Function Calling</a> for example) to create sub-queries to this document query function.</p>
+<p>Here's an json schema spec of the above tool, as required for OpenAI Function Calling:</p>
+<pre class="language-python" tabindex="0"><code class="language-python">tools <span class="token operator">=</span> <span class="token punctuation">[</span>
+	<span class="token punctuation">{</span>
+		<span class="token string">"type"</span><span class="token punctuation">:</span> <span class="token string">"function"</span><span class="token punctuation">,</span>
+		<span class="token string">"function"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+			<span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"query_client_contract"</span><span class="token punctuation">,</span>
+			<span class="token string">"description"</span><span class="token punctuation">:</span>
+				<span class="token string">"Send the query to AI to ask the full document text. The AI response will be returned."</span><span class="token punctuation">,</span>
+			<span class="token string">"parameters"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+				<span class="token string">"type"</span><span class="token punctuation">:</span> <span class="token string">"object"</span><span class="token punctuation">,</span>
+				<span class="token string">"properties"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+					<span class="token string">"client_name"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+						<span class="token string">"type"</span><span class="token punctuation">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
+						<span class="token string">"description"</span><span class="token punctuation">:</span> <span class="token string">"Name of the client the contract is for."</span><span class="token punctuation">,</span>
+					<span class="token punctuation">}</span><span class="token punctuation">,</span>
+					<span class="token string">"document_type"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+						<span class="token string">"type"</span><span class="token punctuation">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
+						<span class="token string">"enum"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"contract"</span><span class="token punctuation">,</span> <span class="token string">"lease"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+						<span class="token string">"description"</span><span class="token punctuation">:</span> <span class="token string">"The type of legal contract."</span><span class="token punctuation">,</span>
+					<span class="token punctuation">}</span><span class="token punctuation">,</span>
+					<span class="token string">"from_date"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+						<span class="token string">"type"</span><span class="token punctuation">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
+						<span class="token string">"format"</span><span class="token punctuation">:</span> <span class="token string">"date-time"</span><span class="token punctuation">,</span>
+						<span class="token string">"description"</span><span class="token punctuation">:</span> <span class="token string">"Find documents from this date."</span><span class="token punctuation">,</span>
+					<span class="token punctuation">}</span><span class="token punctuation">,</span>
+					<span class="token string">"to_date"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+						<span class="token string">"type"</span><span class="token punctuation">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
+						<span class="token string">"format"</span><span class="token punctuation">:</span> <span class="token string">"date-time"</span><span class="token punctuation">,</span>
+						<span class="token string">'description'</span><span class="token punctuation">:</span> <span class="token string">"Find documents up to this date."</span><span class="token punctuation">,</span>
+					<span class="token punctuation">}</span><span class="token punctuation">,</span>
+				<span class="token punctuation">}</span><span class="token punctuation">,</span>
+				<span class="token string">"required"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"client_name"</span><span class="token punctuation">,</span> <span class="token string">"document_type"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+			<span class="token punctuation">}</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Then we need can create a helper function to execute the function when requested by the LLM:</p>
+<pre class="language-python" tabindex="0"><code class="language-python"><span class="token keyword">def</span> <span class="token function">execute_function_call</span><span class="token punctuation">(</span>message<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> message<span class="token punctuation">.</span>tool_calls<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>function<span class="token punctuation">.</span>name <span class="token operator">==</span> <span class="token string">"query_client_contract"</span><span class="token punctuation">:</span>
+        args <span class="token operator">=</span> json<span class="token punctuation">.</span>loads<span class="token punctuation">(</span>message<span class="token punctuation">.</span>tool_calls<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>function<span class="token punctuation">.</span>arguments<span class="token punctuation">)</span>
+        results <span class="token operator">=</span> ask_database<span class="token punctuation">(</span>args<span class="token punctuation">[</span><span class="token string">"client_name"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> args<span class="token punctuation">[</span><span class="token string">"document_type"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> args<span class="token punctuation">[</span><span class="token string">"from_date"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> args<span class="token punctuation">[</span><span class="token string">"to_date"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> args<span class="token punctuation">[</span><span class="token string">"query"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        results <span class="token operator">=</span> <span class="token string-interpolation"><span class="token string">f"Error: function </span><span class="token interpolation"><span class="token punctuation">{</span>message<span class="token punctuation">.</span>tool_calls<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>function<span class="token punctuation">.</span>name<span class="token punctuation">}</span></span><span class="token string"> does not exist"</span></span>
+    <span class="token keyword">return</span> results</code></pre>
+<p>Now in the main chat function, we take a user's query, and if GPT suggests a function call, we execute it and append the results to the chat messages, and then send the messages back to GPT for the final answer:</p>
+<pre class="language-python" tabindex="0"><code class="language-python"><span class="token keyword">def</span> <span class="token function">ask_ai</span><span class="token punctuation">(</span>query<span class="token punctuation">:</span> <span class="token builtin">str</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    messages <span class="token operator">=</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span><span class="token string">"content"</span><span class="token punctuation">:</span> <span class="token string">"Answer the user query, calling functions if required."</span><span class="token punctuation">,</span> <span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"system"</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">{</span><span class="token string">"content"</span><span class="token punctuation">:</span> query<span class="token punctuation">,</span> <span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"user"</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">]</span>
+
+	chat_response <span class="token operator">=</span> client<span class="token punctuation">.</span>chat<span class="token punctuation">.</span>completions<span class="token punctuation">.</span>create<span class="token punctuation">(</span>
+        model<span class="token operator">=</span><span class="token string">"gpt-4-turbo"</span><span class="token punctuation">,</span> <span class="token comment"># Use a more powerful model for function calling</span>
+        tools<span class="token operator">=</span>tools<span class="token punctuation">,</span>
+        tool_choice<span class="token operator">=</span><span class="token string">"auto"</span><span class="token punctuation">,</span> <span class="token comment"># "auto" means the model can pick between generating a message or calling a function</span>
+        messages<span class="token operator">=</span>messages<span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+
+	assistant_message <span class="token operator">=</span> chat_response<span class="token punctuation">.</span>choices<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>message
+	assistant_message<span class="token punctuation">.</span>content <span class="token operator">=</span> <span class="token builtin">str</span><span class="token punctuation">(</span>assistant_message<span class="token punctuation">.</span>tool_calls<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>function<span class="token punctuation">)</span>
+	messages<span class="token punctuation">.</span>append<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"role"</span><span class="token punctuation">:</span> assistant_message<span class="token punctuation">.</span>role<span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> assistant_message<span class="token punctuation">.</span>content<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+	<span class="token keyword">if</span> assistant_message<span class="token punctuation">.</span>tool_calls<span class="token punctuation">:</span>
+		results <span class="token operator">=</span> execute_function_call<span class="token punctuation">(</span>assistant_message<span class="token punctuation">)</span>
+		messages<span class="token punctuation">.</span>append<span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token string">"role"</span><span class="token punctuation">:</span> <span class="token string">"function"</span><span class="token punctuation">,</span> <span class="token string">"tool_call_id"</span><span class="token punctuation">:</span> assistant_message<span class="token punctuation">.</span>tool_calls<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token builtin">id</span><span class="token punctuation">,</span> <span class="token string">"name"</span><span class="token punctuation">:</span> assistant_message<span class="token punctuation">.</span>tool_calls<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>function<span class="token punctuation">.</span>name<span class="token punctuation">,</span> <span class="token string">"content"</span><span class="token punctuation">:</span> results<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+	second_chat_response <span class="token operator">=</span> client<span class="token punctuation">.</span>chat<span class="token punctuation">.</span>completions<span class="token punctuation">.</span>create<span class="token punctuation">(</span>
+        model<span class="token operator">=</span><span class="token string">"gpt-4-turbo"</span><span class="token punctuation">,</span> <span class="token comment"># Use a more powerful model for function calling</span>
+        tools<span class="token operator">=</span>tools<span class="token punctuation">,</span>
+        tool_choice<span class="token operator">=</span><span class="token string">"auto"</span><span class="token punctuation">,</span> <span class="token comment"># "auto" means the model can pick between generating a message or calling a function</span>
+        messages<span class="token operator">=</span>messages<span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+	<span class="token keyword">print</span><span class="token punctuation">(</span>second_chat_response<span class="token punctuation">.</span>choices<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>message<span class="token punctuation">.</span>content<span class="token punctuation">)</span></code></pre>
+<p>There are several benefits to this approach. The main benefit, as discussed above, is that we are querying whole documents. For many use cases this is going to provide more complete answers for users. You can also easily extend this approach by adding more functions for different document types and data sources. GPT will call multiple functions which you can execute in parallel, and in the final GPT call we can use gpt-4-turbo to integrate the results and provide the final answer. If you do have a handful of unknown documents, you can still use the chunk-retrieve-query approach for those, and simply add a function to the tool list to query the chunked documents with a typical RAG pipeline.</p>
+<p>I'm excited to see how this approach can be used in practice. I think it will be especially useful for complex questions where the answer is spread across multiple documents, or where the user query is for a summary of a document. I'd love to hear how you get on with this approach. Please reach out if you have any other ideas for how to improve this approach, or related new ideas for improving RAG.</p>
+
+<ul class="links-nextprev"><li>Previous: <a href="/blog/building-an-ai-superserver/">Building an AI SuperServer for LLM training and experiments</a></li>
+</ul>
+
+		</main>
+
+		<footer></footer>
+
+		<!-- This page `/blog/your-rag-may-not-need-a-vector-store/` was built on 2024-04-25T11:03:08.071Z -->
+	</body>
+</html>
