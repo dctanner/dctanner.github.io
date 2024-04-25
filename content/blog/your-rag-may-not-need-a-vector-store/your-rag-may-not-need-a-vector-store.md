@@ -4,31 +4,31 @@ date: 2024-04-25
 tags:
 ---
 
-When building a RAG pipeline you'll probably reach for a vector store to store embeddings of document chunks, which are then retrieved and put into context at query time. This works well if your users are asking single fact queries where the answer can be found in a relevant document chunk. But if you just want to ask more complex questions where the answer requires information, spread across the whole document or across multiple documents, retreiveing chunks often leaves out critical information and can lead to inaccurate responses.
+When building a RAG pipeline you'll probably reach for a vector store to store embeddings of document chunks, which are then retrieved and put into context at query time. This works well if your users are asking single fact queries where the answer can be found in a relevant document chunk. But if your users want to ask more complex questions where the answer requires information spread across the whole document or across multiple documents, retreiveing chunks often leaves out critical information and can lead to inaccurate responses.
 
-Relying on document chunks has been a great solution to add knowledge to LLMs with limited context windows. But context windows have grown massively over the past year, with the leading LLMs supporting over 200,000 token context windows. This opens the door to new approaches to RAG which are less constrained by context.
+Relying on document chunks has been a great solution to add knowledge to LLMs with a limited context window. But context windows have grown massively over the past year, with the leading LLMs supporting context windows reaching 1M tokens. This opens the door to new approaches to RAG which are less constrained by context.
 
 ## Whole document querying RAG
 
-Instead of retrieving document chunks, I've had success retreiving and querying whole documents. The result is that all the knowledge in a document is included. Queries like 'summarize xyz' yield a full and complete summary without risk of missing important details.
+Instead of retrieving document chunks, I've had success retreiving and querying whole documents. Queries like 'summarize xyz document ' or 'compare document abc to xyz' yield a full and complete summary without risk of missing important details.
 
-When does this work? This approach works best if your documents are all of the same type or can be put into categories. It works especially well if the user queries include enough information to locate the specific document(s) the question is for.or
+When does this appraoch work? This approach works best if your documents are all of the same type or can be put into categories, and if the user queries include enough information to locate the specific document(s) the question is for.
 
-For example, if your documents are client contracts, each may have a client name, date and contract type. If a user asks 'Summarize the most recent contract with Acme Inc?' we have enough information to find this document, and then use the whole document as context to fully answer their request.
+For example, if your documents are client contracts, each may have a client name, date and contract type. If a user asks 'Summarize the most recent contract with Acme Inc?' we have enough information to find this document, and then use the whole document as context to fully answer their question.
 
-Querying whole documents like this calls for a different RAG workflow than the common single step chunk-retrieve-query workflow. Retrieving whole documents and putting them straight into the context could fill up even the largest context windows.
+Querying whole documents like this calls for a different RAG workflow than the common single step chunk-retrieve-query workflow. Retrieving whole documents and putting them straight into the context could fill up even a large context window.
 
-Instead, we can leverage the function/tool calling ability of many LLMs to create sub-queries to query each document. We can even make use of cheaper and faster LLMs for these sub-queries which have to process the complete documents.
+Instead, we can leverage the function/tool calling ability of many LLMs to create sub-queries to query each document, which can be executed in parallel. We can even make use of cheaper and faster LLMs for these sub-queries which have to process the complete documents.
 
 What does this look like in practice?
 
 ### Create document query functions
 
-In the example above, we would need to be able to locate and query a client contract document. We can create a function which takes several search filters, retrieves the full text of the top matching document, and then calls an LLM (e.g. gpt-3.5-turbo) with the full document text and the query. The fuction should accept the filters required to find the document e.g.: client name, date range, contract type. Plus a 'query' param which is the query to send to the LLM with the full document text.
+In the client contracts example, we would need to be able to locate and query a client contract document. We can create a function which takes several search filters, retrieves the full text of the top matching document, and then calls an LLM (e.g. gpt-3.5-turbo) with the full document text and the query. The fuction should accept the filters required to find the document e.g.: client name, date range, contract type. Plus a query param which is the query to send to the LLM with the full document text.
 
-There's no right way to search for these documents, you could use SQL, Elastic or even embeddings. The key thing is it should be able handle fuzzy search filters, e.g. for the client name and contract type.
+There's no set way to search for these documents, you could use SQL, Elastic or even embeddings. The key thing is it should be able handle fuzzy search filters for certain params, e.g. for the client name in this case.
 
-Here's an example of this function:
+Here's an example of this function in Python:
 
 ```python
 def query_client_contract(client_name: str, document_type: str, from_date: str = None, to_date: str = None, query: str):
@@ -48,9 +48,9 @@ def query_client_contract(client_name: str, document_type: str, from_date: str =
 
 ### Sub-query function calls
 
-Now we have document seach function, we are going to use LLM function calling (see [OpenAI Function Calling](https://platform.openai.com/docs/guides/function-calling) for example) to create sub-queries to this document query function.
+Now we have the document query function, we are going to use [OpenAI Function Calling](https://platform.openai.com/docs/guides/function-calling) to create sub-queries to this function.
 
-Here's an json schema spec of the above tool, as required for OpenAI Function Calling:
+First we use JSON Schema to define the tool for OpenAI function calling:
 
 ```python
 tools = [
@@ -90,7 +90,7 @@ tools = [
 ]
 ```
 
-Then we need can create a helper function to execute the function when requested by the LLM:
+Then we need create a helper function to execute the function when requested by the LLM:
 
 ```python
 def execute_function_call(message):
@@ -134,6 +134,8 @@ def ask_ai(query: str):
     )
 	print(second_chat_response.choices[0].message.content)
 ```
+
+## The benefits of this approach
 
 There are several benefits to this approach. The main benefit, as discussed above, is that we are querying whole documents. For many use cases this is going to provide more complete answers for users. You can also easily extend this approach by adding more functions for different document types and data sources. GPT will call multiple functions which you can execute in parallel, and in the final GPT call we can use gpt-4-turbo to integrate the results and provide the final answer. If you do have a handful of unknown documents, you can still use the chunk-retrieve-query approach for those, and simply add a function to the tool list to query the chunked documents with a typical RAG pipeline.
 
