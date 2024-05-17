@@ -13,11 +13,9 @@ eleventyNavigation:
 
 Previously I co-founded MediaCore (ed-tech, sold to Workday inc), Pusher (realtime messaging, sold to MessageBird), thoughtbot (my agency merged with them), Rebase Ventures (developer tools & SaaS holding company) and a few other things.
 
-<!-- I'm currently working on [Sablo AI](https://sablo.ai), helping organizations move from regular RAG to advanced agent solutions. -->
-
 # My Companies
 
-**[Sablo AI](https://sablo.ai) - Helping organizations move from regular RAG to advanced agent solutions.**
+**[ada.sh](https://ada.sh) - The GenAI Cloud.**
 
 [Rebase Ventures](http://rebase.ventures) - My personal holding company for SaaS products and various investments. Home to [UseCSV](https://UseCSV.com) (CSV import API) and [UseScraper](https://usescraper.com) (web scraping API).
 
