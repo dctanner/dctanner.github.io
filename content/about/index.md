@@ -17,9 +17,9 @@ Previously I co-founded MediaCore (ed-tech, sold to Workday inc), Pusher (realti
 
 # My Companies
 
-**[[Layercode](https://layercode.com) - The GenAI Cloud.**
+**[Layercode](https://layercode.com) - The GenAI Cloud.**
 
-[Rebase Ventures](http://rebase.ventures) - My personal holding company. Home to [UseCSV](https://UseCSV.com) (CSV import API) and [UseScraper](https://usescraper.com) (web scraping API).
+Rebase Ventures - My personal holding company. Home various companies, including [UseCSV](https://UseCSV.com) (CSV import API) and [UseScraper](https://usescraper.com) (web scraping API).
 
 [Pusher](http://pusher.com) (Co-Founder. Acquired by MessageBird in 2020) - Realtime messaging platform.
 
