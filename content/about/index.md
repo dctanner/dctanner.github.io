@@ -11,13 +11,15 @@ eleventyNavigation:
 
 [x.com/dctanner](https://x.com/dctanner)
 
-Previously I co-founded MediaCore (ed-tech, sold to Workday inc), Pusher (realtime messaging, sold to MessageBird), thoughtbot (my agency merged with them), Rebase Ventures (developer tools & SaaS holding company) and a few other things.
+Co-founder, CEO of [Layercode](https://layercode.com).
+
+Previously I co-founded MediaCore (ed-tech, sold to Workday inc), Pusher (realtime messaging, sold to MessageBird), thoughtbot (my agency merged with them), Rebase Ventures (person holding company) and a few other things.
 
 # My Companies
 
-**[ada.sh](https://ada.sh) - The GenAI Cloud.**
+**[[Layercode](https://layercode.com) - The GenAI Cloud.**
 
-[Rebase Ventures](http://rebase.ventures) - My personal holding company for SaaS products and various investments. Home to [UseCSV](https://UseCSV.com) (CSV import API) and [UseScraper](https://usescraper.com) (web scraping API).
+[Rebase Ventures](http://rebase.ventures) - My personal holding company. Home to [UseCSV](https://UseCSV.com) (CSV import API) and [UseScraper](https://usescraper.com) (web scraping API).
 
 [Pusher](http://pusher.com) (Co-Founder. Acquired by MessageBird in 2020) - Realtime messaging platform.
 
