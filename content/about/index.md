@@ -33,7 +33,7 @@ Panda (Co-Founder. Acquired by Xenon in 2013) - Cloud video processing.
 
 Some select private investments I’ve made:
 
-[MCJ Collective](https://angel.co/v/back/mcj-collective) - early LP in the MCJ climate focused seed fund.
+[MCJ](https://mcj.vc/) - early LP in the MCJ climate focused funds.
 
 [Entocycle](https://www.entocycle.com) - Insect farming for fish & animal feed.
 
