@@ -2,7 +2,7 @@
 layout: layouts/base.njk
 eleventyNavigation:
   key: About Me
-  order: 3
+  order: 1
 ---
 
 <img src="/img/damien-square-small.jpeg" alt="Me" width="25%">
@@ -11,15 +11,15 @@ eleventyNavigation:
 
 [x.com/dctanner](https://x.com/dctanner)
 
-Co-founder, CEO of [Layercode](https://layercode.com).
+**I'm the co-founder and CEO of [Layercode](https://layercode.com).**
 
-Previously I co-founded MediaCore (ed-tech, sold to Workday inc), Pusher (realtime messaging, sold to MessageBird), thoughtbot (my agency merged with them), Rebase Ventures (person holding company) and a few other things.
+Previously I co-founded MediaCore (ed-tech, sold to Workday inc), Pusher (realtime messaging, sold to MessageBird) and thoughtbot (my agency merged with them).
 
-# My Companies
+I also organise the [AI Engineer London Meetup](https://lu.ma/calendar/cal-npDMhGfssuQj9ZE).
+
+## Companies
 
 **[Layercode](https://layercode.com) - The GenAI Cloud.**
-
-Rebase Ventures - My personal holding company. Home various companies, including [UseCSV](https://UseCSV.com) (CSV import API) and [UseScraper](https://usescraper.com) (web scraping API).
 
 [Pusher](http://pusher.com) (Co-Founder. Acquired by MessageBird in 2020) - Realtime messaging platform.
 
@@ -29,7 +29,7 @@ MediaCore (Co-Founder. Acquired by Workday in 2015) - Video platform for educati
 
 Panda (Co-Founder. Acquired by Xenon in 2013) - Cloud video processing.
 
-# Investing
+## Investing
 
 Some select private investments I’ve made:
 
