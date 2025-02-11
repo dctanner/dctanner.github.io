@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>LLM tool calling as code blocks</title>
+		<meta name="description" content="Notes from a journey of compounding curiosity.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="Damien C. Tanner">
+		<link rel="alternate" href="/feed/feed.json" type="application/json" title="Damien C. Tanner">
+		
+		<style>/**
+ * okaidia theme for JavaScript, CSS and HTML
+ * Loosely based on Monokai textmate theme by http://www.monokai.nl/
+ * @author ocodia
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: #f8f8f2;
+	background: none;
+	text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+	border-radius: 0.3em;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #272822;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: #8292a2;
+}
+
+.token.punctuation {
+	color: #f8f8f2;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #f92672;
+}
+
+.token.boolean,
+.token.number {
+	color: #ae81ff;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #a6e22e;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string,
+.token.variable {
+	color: #f8f8f2;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.function,
+.token.class-name {
+	color: #e6db74;
+}
+
+.token.keyword {
+	color: #66d9ef;
+}
+
+.token.regex,
+.token.important {
+	color: #fd971f;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+* { box-sizing: border-box; }
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #082840;
+	--text-color-link-active: #5f2b48;
+	--text-color-link-visited: #17050F;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 50em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main {
+	padding: 1rem;
+}
+main :first-child {
+	margin-top: 0;
+}
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+header:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.links-nextprev {
+	list-style: none;
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+}
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em .5em;
+	flex-wrap: wrap;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+	margin-right: 2em;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+	margin-right: 1em;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	list-style: none;
+	padding: 0;
+	padding-left: 1.5rem;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	content: "" counter(start-from, decimal-leading-zero) ". ";
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	padding-left: .25em;
+	padding-right: .5em;
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-transform: capitalize;
+	font-style: italic;
+}
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+/* Direct Links / Markdown Headers */
+.header-anchor {
+	text-decoration: none;
+	font-style: normal;
+	font-size: 1em;
+	margin-left: .1em;
+}
+a[href].header-anchor,
+a[href].header-anchor:visited {
+	color: transparent;
+}
+a[href].header-anchor:focus,
+a[href].header-anchor:hover {
+	text-decoration: underline;
+}
+a[href].header-anchor:focus,
+:hover > a[href].header-anchor {
+	color: #aaa;
+}
+
+h2 + .header-anchor {
+	font-size: 1.5em;
+}</style>
+	</head>
+	<body>
+		<a href="#skip" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">Damien C. Tanner</a>
+			<nav>
+				<h2 class="visually-hidden">Top level navigation menu</h2>
+				<ul class="nav">
+				</ul>
+			</nav>
+		</header>
+
+		<main id="skip">
+			
+<h1>LLM tool calling as code blocks</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2025-02-11">11 February 2025</time></li>
+</ul>
+
+<p>When building sophisticated agents that have more than a handful of tools to call, I've often found the inbuilt structured output/json tool calling methods provided by LMA APIs come up short.</p>
+<p>Intuitively, one of the reasons for this is that when the structured output is enabled, there is no room for chain of thought, text or inbuilt support for comments amongst the JSON output of tool calls.</p>
+<p>In addition, when you're trying to compare different LLM APIs, you have to switch between different tool calling schemas.</p>
+<p>LLMs are trained on a lot of code, and a tool call is really just a function call. So why not just use code blocks for tool calls?</p>
+<p>When you use LLMs to output code with tool calls, you may initially think of running the code in a sandbox. But that comes with infra overhead and security concerns. Instead, what if we just parse tool calls in code blocks with regex, and then validate the function names and params before calling the internal functions?</p>
+<p>I've had great results with this approach. It's easy to implement and it works with any LLM (including open source models). The chain of thought and comments next to the tool calls is especially helpful when debugging, as the LLM will explain why it decided to call a particular tool with those params.</p>
+<p>You can even do clever stuff like parse the text stream from the LLM as it comes in,and call tools as they are returned, instead of waiting for the LLM to finish.</p>
+<p>He's an example of this approach that makes use of zod and Vercel AI SDK:</p>
+<pre class="language-typescript" tabindex="0"><code class="language-typescript"><span class="token comment">// Run this example:</span>
+<span class="token comment">// npm i zod zod-to-ts relaxed-json ai @ai-sdk/openai</span>
+<span class="token comment">// tsx tool-calls-as-ts-example.ts</span>
+
+<span class="token keyword">import</span> <span class="token punctuation">{</span> z <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">"zod"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token constant">RJSON</span> <span class="token keyword">from</span> <span class="token string">"relaxed-json"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> printNode<span class="token punctuation">,</span> zodToTs <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">"zod-to-ts"</span><span class="token punctuation">;</span>
+
+<span class="token keyword">type</span> <span class="token class-name">ToolsList</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+	<span class="token punctuation">[</span>key<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">]</span><span class="token operator">:</span> <span class="token punctuation">{</span> name<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">;</span> schema<span class="token operator">:</span> z<span class="token punctuation">.</span>ZodType<span class="token operator">&lt;</span><span class="token builtin">unknown</span><span class="token operator">></span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> <span class="token function-variable function">getToolsAsTypeScriptString</span> <span class="token operator">=</span> <span class="token punctuation">(</span>toolsList<span class="token operator">:</span> ToolsList<span class="token punctuation">)</span> <span class="token operator">=></span>
+	Object<span class="token punctuation">.</span><span class="token function">entries</span><span class="token punctuation">(</span>toolsList<span class="token punctuation">)</span>
+		<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">[</span>toolName<span class="token punctuation">,</span> <span class="token punctuation">{</span> name<span class="token punctuation">,</span> schema <span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+			<span class="token keyword">const</span> <span class="token punctuation">{</span> node <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">zodToTs</span><span class="token punctuation">(</span>schema<span class="token punctuation">,</span> toolName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token keyword">const</span> nodeString <span class="token operator">=</span> <span class="token function">printNode</span><span class="token punctuation">(</span>node<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token keyword">const</span> tsDefAsString <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">/** </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> */ \n</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>toolName<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">(</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>nodeString<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+			<span class="token keyword">return</span> tsDefAsString<span class="token punctuation">;</span>
+		<span class="token punctuation">}</span><span class="token punctuation">)</span>
+		<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">"\n\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> <span class="token function-variable function">parseToolsCalledContent</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">{</span>
+	llmResponseWithToolCallsAsJsCodeblock<span class="token punctuation">,</span>
+	toolsList<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+	llmResponseWithToolCallsAsJsCodeblock<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">;</span>
+	toolsList<span class="token operator">:</span> ToolsList<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+	<span class="token keyword">const</span> toolsCallRegex <span class="token operator">=</span>
+		<span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(\w+)\(([^()]*(?:\([^()]*\)[^()]*)*)\)(?:\s*\/\/.*)?</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">;</span>
+	<span class="token keyword">const</span> toolsCalls <span class="token operator">=</span>
+		llmResponseWithToolCallsAsJsCodeblock<span class="token punctuation">.</span><span class="token function">matchAll</span><span class="token punctuation">(</span>toolsCallRegex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">const</span> validatedToolsToCall<span class="token operator">:</span> <span class="token punctuation">{</span>
+		name<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">;</span>
+		args<span class="token operator">:</span> <span class="token builtin">any</span><span class="token punctuation">;</span>
+		originalArgs<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+	<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> match <span class="token keyword">of</span> toolsCalls<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		<span class="token comment">// eslint-disable-next-line @typescript-eslint/no-unused-vars</span>
+		<span class="token keyword">const</span> <span class="token punctuation">[</span>_call<span class="token punctuation">,</span> toolName<span class="token punctuation">,</span> argString<span class="token punctuation">]</span> <span class="token operator">=</span> match<span class="token punctuation">;</span>
+		<span class="token comment">// console.log(`Found match for tools call: ${toolsName}(${argString})`)</span>
+		<span class="token keyword">if</span> <span class="token punctuation">(</span>toolName <span class="token operator">&amp;&amp;</span> toolsList<span class="token punctuation">.</span><span class="token function">hasOwnProperty</span><span class="token punctuation">(</span>toolName<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+			<span class="token keyword">const</span> tool <span class="token operator">=</span> toolsList<span class="token punctuation">[</span>toolName <span class="token keyword">as</span> <span class="token keyword">keyof</span> <span class="token keyword">typeof</span> toolsList<span class="token punctuation">]</span><span class="token punctuation">;</span>
+			<span class="token keyword">const</span> argsObj <span class="token operator">=</span> <span class="token constant">RJSON</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>argString<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token comment">// Validate the arguments using the Zod schema</span>
+			<span class="token keyword">const</span> validatedArgs <span class="token operator">=</span> tool<span class="token punctuation">.</span>schema<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>argsObj<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			validatedToolsToCall<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+				name<span class="token operator">:</span> toolName<span class="token punctuation">,</span>
+				args<span class="token operator">:</span> validatedArgs<span class="token punctuation">,</span>
+				originalArgs<span class="token operator">:</span> argString<span class="token punctuation">,</span>
+			<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+			<span class="token builtin">console</span><span class="token punctuation">.</span><span class="token function">warn</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Tool </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>toolName<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> is not found.</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">}</span>
+	<span class="token keyword">return</span> validatedToolsToCall<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token comment">// EXAMPLE</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> generateText <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">"ai"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> openai <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">"@ai-sdk/openai"</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token function-variable function">example</span> <span class="token operator">=</span> <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+	<span class="token keyword">const</span> tools <span class="token operator">=</span> <span class="token punctuation">{</span>
+		getWeather<span class="token operator">:</span> <span class="token punctuation">{</span>
+			name<span class="token operator">:</span> <span class="token string">"Get weather for location today (default) or N days in the future up to 10 days"</span><span class="token punctuation">,</span>
+			<span class="token function-variable function">function</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">{</span>
+				location<span class="token punctuation">,</span>
+				daysInFuture<span class="token punctuation">,</span>
+			<span class="token punctuation">}</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+				location<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">;</span>
+				daysInFuture<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span>
+			<span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+				<span class="token comment">// TODO: Do actualy weather API call</span>
+				<span class="token keyword">return</span> <span class="token punctuation">{</span>
+					location<span class="token punctuation">,</span>
+					daysInFuture<span class="token punctuation">,</span>
+					weather<span class="token operator">:</span> <span class="token string">"sunny"</span><span class="token punctuation">,</span>
+				<span class="token punctuation">}</span><span class="token punctuation">;</span>
+			<span class="token punctuation">}</span><span class="token punctuation">,</span>
+			schema<span class="token operator">:</span> z<span class="token punctuation">.</span><span class="token function">object</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+				location<span class="token operator">:</span> z<span class="token punctuation">.</span><span class="token function">string</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">describe</span><span class="token punctuation">(</span><span class="token string">"The location to get the weather for."</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+				daysInFuture<span class="token operator">:</span> z
+					<span class="token punctuation">.</span><span class="token function">number</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+					<span class="token punctuation">.</span><span class="token function">describe</span><span class="token punctuation">(</span><span class="token string">"The number of days in the future to get the weather for."</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+			<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+		<span class="token punctuation">}</span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">;</span>
+	<span class="token keyword">const</span> toolsAsTypeScriptString <span class="token operator">=</span> <span class="token function">getToolsAsTypeScriptString</span><span class="token punctuation">(</span>tools<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">const</span> <span class="token punctuation">{</span> text<span class="token operator">:</span> llmResponseWithToolCallsAsJsCodeblock <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">generateText</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+		model<span class="token operator">:</span> <span class="token function">openai</span><span class="token punctuation">(</span><span class="token string">"gpt-4o"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+		prompt<span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+	AVAILABLE_TOOLS:
+	"""
+    </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>toolsAsTypeScriptString<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">
+    """
+
+    AVAILABLE_TOOLS must be called in a single javascript codeblock. All function arguments must be on a single line.
+
+    QUESTION:
+    "What is the weather in San Francisco?"
+    </span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token builtin">console</span><span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"Tools schema pass to llm:\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token builtin">console</span><span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>toolsAsTypeScriptString<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token builtin">console</span><span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"\nResponse from llm with tool call code block:\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token builtin">console</span><span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>llmResponseWithToolCallsAsJsCodeblock<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">const</span> validatedToolsToCall <span class="token operator">=</span> <span class="token function">parseToolsCalledContent</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+		llmResponseWithToolCallsAsJsCodeblock<span class="token punctuation">,</span>
+		toolsList<span class="token operator">:</span> tools<span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token builtin">console</span><span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"\nValidated tools to call:\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token builtin">console</span><span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>validatedToolsToCall<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token function">example</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Example output:</p>
+<pre class="language-js" tabindex="0"><code class="language-js">$ tsx tool<span class="token operator">-</span>calls<span class="token operator">-</span><span class="token keyword">as</span><span class="token operator">-</span>ts<span class="token operator">-</span>example<span class="token punctuation">.</span>ts
+Tools schema pass to llm<span class="token operator">:</span>
+
+<span class="token comment">/** Get weather for location today (default) or N days in the future up to 10 days */</span>
+<span class="token function">getWeather</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token comment">/** The location to get the weather for. */</span>
+    <span class="token literal-property property">location</span><span class="token operator">:</span> string<span class="token punctuation">;</span>
+    <span class="token comment">/** The number of days in the future to get the weather for. */</span>
+    <span class="token literal-property property">daysInFuture</span><span class="token operator">:</span> number<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+Response from llm <span class="token keyword">with</span> tool call code block<span class="token operator">:</span>
+
+<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token template-punctuation string">`</span></span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">javascript
+getWeather({ location: "San Francisco", daysInFuture: 0 })
+</span><span class="token template-punctuation string">`</span></span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token template-punctuation string">`</span></span>
+
+Validated tools to call<span class="token operator">:</span>
+
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'getWeather'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">args</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">location</span><span class="token operator">:</span> <span class="token string">'San Francisco'</span><span class="token punctuation">,</span> <span class="token literal-property property">daysInFuture</span><span class="token operator">:</span> <span class="token number">0</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">originalArgs</span><span class="token operator">:</span> <span class="token string">'{ location: "San Francisco", daysInFuture: 0 }'</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+
+<ul class="links-nextprev"><li>Previous: <a href="/blog/your-rag-may-not-need-a-vector-store/">Using LLM tool calling and long context for better RAG</a></li>
+</ul>
+
+		</main>
+
+		<footer></footer>
+
+		<!-- This page `/blog/tools-as-code/` was built on 2025-02-11T14:19:11.624Z -->
+	</body>
+</html>
