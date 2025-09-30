@@ -19,7 +19,7 @@ I also organise the [AI Engineer London Meetup](https://lu.ma/calendar/cal-npDMh
 
 ## Companies
 
-**[Layercode](https://layercode.com) - The GenAI Cloud.**
+**[Layercode](https://layercode.com) - Voice AI platform for developers.**
 
 [Pusher](http://pusher.com) (Co-Founder. Acquired by MessageBird in 2020) - Realtime messaging platform.
 
