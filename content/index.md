@@ -11,7 +11,7 @@ eleventyNavigation:
 
 [x.com/dctanner](https://x.com/dctanner)
 
-**I'm the co-founder and CEO of [Layercode](https://layercode.com).**
+**I'm the co-founder and CEO of [Toyo](https://toyo.ai).**
 
 Previously I co-founded MediaCore (ed-tech, sold to Workday inc), Pusher (realtime messaging, sold to MessageBird) and thoughtbot (my agency merged with them).
 
@@ -19,7 +19,7 @@ I also organise the [AI Engineer London Meetup](https://lu.ma/calendar/cal-npDMh
 
 ## Companies
 
-**[Layercode](https://layercode.com) - Voice AI platform for developers.**
+**[Toyo](https://toyo.ai) - AI agent for founders.**
 
 [Pusher](http://pusher.com) (Co-Founder. Acquired by MessageBird in 2020) - Realtime messaging platform.
 
